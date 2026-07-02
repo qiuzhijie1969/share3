@@ -2,10 +2,258 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=./children-poetry-review.html">
-  <title>share3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>share3 | HTML 分享目录</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18202a;
+      --muted: #667085;
+      --line: #d9e0e8;
+      --paper: #f7f4ed;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent-strong: #0b4f4a;
+      --soft: #e4f2ef;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.12), transparent 42%),
+        linear-gradient(225deg, rgba(182, 91, 43, 0.10), transparent 38%),
+        var(--paper);
+      color: var(--ink);
+      font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      min-height: 100vh;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    header {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 72px);
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.75;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 28px 0 22px;
+    }
+
+    input {
+      width: min(420px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      font: inherit;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+    }
+
+    .item {
+      display: grid;
+      gap: 12px;
+      min-height: 164px;
+      padding: 18px;
+      border: 1px solid rgba(24, 32, 42, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: var(--panel);
+    }
+
+    .kind {
+      width: fit-content;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 9px;
+    }
+
+    .name {
+      overflow-wrap: anywhere;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .path {
+      overflow-wrap: anywhere;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .empty {
+      padding: 28px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--muted);
+    }
+
+    footer {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="./children-poetry-review.html">children-poetry-review.html</a>...</p>
+  <main>
+    <header>
+      <h1>HTML 分享目录</h1>
+      <p class="lead">这个页面会自动列出仓库中的 HTML 文件。把 Keynote 导出的网页文件夹放进 <strong>slides/</strong>，或把单个 HTML 放在仓库中，几分钟后就可以把链接发给学生。</p>
+    </header>
+
+    <section class="toolbar" aria-label="筛选">
+      <input id="search" type="search" placeholder="搜索文件名或路径">
+      <span id="status" class="status">正在读取仓库文件...</span>
+    </section>
+
+    <section id="list" class="grid" aria-live="polite"></section>
+
+    <footer>
+      站点地址：<span id="site-url"></span><br>
+      GitHub 仓库：<a href="https://github.com/qiuzhijie1969/share3">qiuzhijie1969/share3</a>
+    </footer>
+  </main>
+
+  <script>
+    const owner = "qiuzhijie1969";
+    const repo = "share3";
+    const branch = "main";
+    const baseUrl = "https://qiuzhijie1969.github.io/share3/";
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
+    const list = document.querySelector("#list");
+    const status = document.querySelector("#status");
+    const search = document.querySelector("#search");
+    const siteUrl = document.querySelector("#site-url");
+    let files = [];
+
+    siteUrl.textContent = baseUrl;
+
+    function titleFromPath(path) {
+      const clean = path.replace(/\/index\.html$/i, "").replace(/\.html$/i, "");
+      const name = clean.split("/").filter(Boolean).pop() || "首页";
+      return decodeURIComponent(name).replace(/[-_]+/g, " ");
+    }
+
+    function fileUrl(path) {
+      if (/\/index\.html$/i.test(path)) {
+        return baseUrl + path.replace(/index\.html$/i, "");
+      }
+      return baseUrl + path;
+    }
+
+    function kindFromPath(path) {
+      if (path.startsWith("slides/")) return "slides";
+      if (/\/index\.html$/i.test(path)) return "folder";
+      return "html";
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      const visible = files.filter((file) => {
+        return file.path.toLowerCase().includes(query) || titleFromPath(file.path).toLowerCase().includes(query);
+      });
+
+      status.textContent = `${visible.length} 个可分享页面`;
+      list.innerHTML = "";
+
+      if (!visible.length) {
+        list.innerHTML = '<div class="empty">没有找到匹配的 HTML 文件。</div>';
+        return;
+      }
+
+      for (const file of visible) {
+        const a = document.createElement("a");
+        a.className = "item";
+        a.href = fileUrl(file.path);
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.innerHTML = `
+          <span class="kind">${kindFromPath(file.path)}</span>
+          <span class="name">${titleFromPath(file.path)}</span>
+          <span class="path">${file.path}</span>
+        `;
+        list.appendChild(a);
+      }
+    }
+
+    async function loadFiles() {
+      try {
+        const response = await fetch(apiUrl, { headers: { "Accept": "application/vnd.github+json" } });
+        if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+        const data = await response.json();
+        files = data.tree
+          .filter((entry) => entry.type === "blob" && /\.html$/i.test(entry.path))
+          .filter((entry) => entry.path !== "index.html")
+          .sort((a, b) => a.path.localeCompare(b.path, "zh-CN"));
+        render();
+      } catch (error) {
+        files = [{ path: "children-poetry-review.html" }];
+        status.textContent = "暂时无法自动读取仓库，已显示备用链接。";
+        render();
+      }
+    }
+
+    search.addEventListener("input", render);
+    loadFiles();
+  </script>
 </body>
 </html>
