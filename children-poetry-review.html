@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>国际儿童诗歌海滩｜评奖工作台</title>
+    <link rel="stylesheet" href="./children-poetry.css?v=20260614-pebble-life-center">
+  </head>
+  <body data-page="review">
+    <header class="poetry-topbar review-topbar">
+      <a class="poetry-brand" href="./children-poetry-submit.html" aria-label="International Children's Poetry Beach">
+        <img src="./assets/children-poetry/poetry-beach-logo.png" alt="">
+        <span>
+          <strong data-i18n="brandName">国际儿童诗歌海滩</strong>
+          <small>评奖工作台</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="页面入口">
+        <div class="language-switch" aria-label="Language">
+          <button type="button" class="is-active" data-lang="zh">中文</button>
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="fr">FR</button>
+          <button type="button" data-lang="es">ES</button>
+          <button type="button" data-lang="ar">AR</button>
+          <button type="button" data-lang="de">DE</button>
+          <button type="button" data-lang="ru">RU</button>
+          <button type="button" data-lang="pt">PT</button>
+          <button type="button" data-lang="ja">日</button>
+          <button type="button" data-lang="ko">한</button>
+          <button type="button" data-lang="sw">SW</button>
+          <button type="button" data-lang="it">IT</button>
+        </div>
+        <a class="nav-link" href="./children-poetry-submit.html" data-i18n="submitEntrance">投稿入口</a>
+      </nav>
+    </header>
+
+    <main class="poetry-page review-page awards-page">
+      <section class="review-banner awards-banner" aria-label="评奖概览">
+        <div>
+          <span class="eyebrow">Awards Desk</span>
+          <h1>后台分稿、初审、终审与统计</h1>
+          <p>评委可按“语种 / 国别 / 省份”或“年龄层”两种方式查看投稿文件夹，进入分配给自己的文件夹后逐稿阅读、暂存意见并提交评审结果。</p>
+        </div>
+        <div class="review-stats" aria-label="评审统计">
+          <div>
+            <strong id="statSelected">0</strong>
+            <span>已建议入选</span>
+          </div>
+          <div>
+            <strong id="statExcellent">0</strong>
+            <span>优秀奖候选</span>
+          </div>
+          <div>
+            <strong id="statGrand">0</strong>
+            <span>大奖候选</span>
+          </div>
+          <div>
+            <strong id="statRejected">0</strong>
+            <span>初审落选</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="gate-panel" aria-label="评委身份入口">
+        <div class="stage-tabs-review" role="tablist" aria-label="评审阶段">
+          <button class="is-active" type="button" data-stage="initial">初审评委</button>
+          <button type="button" data-stage="final">终审评委</button>
+        </div>
+
+        <form id="initialGateForm" class="gate-form is-active" data-gate="initial">
+          <label class="field">
+            <span>姓名</span>
+            <input name="reviewerName" required autocomplete="name" placeholder="真实姓名">
+          </label>
+          <label class="field">
+            <span>联系方式</span>
+            <input name="reviewerContact" required autocomplete="email" placeholder="邮箱或手机号">
+          </label>
+          <label class="field">
+            <span>专长</span>
+            <input name="reviewerSpecialty" placeholder="儿童文学 / 外语 / 教育">
+          </label>
+          <label class="field">
+            <span>领取文件夹</span>
+            <select name="assignedFolder" id="initialFolderSelect"></select>
+          </label>
+          <button class="primary-button" type="submit">进入初审</button>
+        </form>
+
+        <form id="finalGateForm" class="gate-form" data-gate="final">
+          <label class="field">
+            <span>姓名</span>
+            <input name="finalName" required autocomplete="name" placeholder="真实姓名">
+          </label>
+          <label class="field">
+            <span>编号</span>
+            <input name="finalCode" required placeholder="评委编号">
+          </label>
+          <label class="field">
+            <span>密码</span>
+            <input name="finalPassword" required type="password" placeholder="请输入密码">
+          </label>
+          <label class="field">
+            <span>查看范围</span>
+            <select name="finalScope" id="finalScopeSelect"></select>
+          </label>
+          <button class="primary-button" type="submit">进入终审</button>
+        </form>
+      </section>
+
+      <section class="awards-toolbar" aria-label="后台筛选工具">
+        <div class="folder-mode" role="group" aria-label="文件夹分类方式">
+          <button class="is-active" type="button" data-folder-mode="language">按语种 / 国别 / 省份</button>
+          <button type="button" data-folder-mode="age">按年龄层</button>
+        </div>
+        <label class="search-field">
+          <span>搜索</span>
+          <input id="reviewSearch" placeholder="搜索标题、作者、国家、省份、编号">
+        </label>
+        <label class="filter-field awards-filter">
+          <span>状态</span>
+          <select id="decisionFilter">
+            <option value="all">全部</option>
+            <option value="advanced">建议入选</option>
+            <option value="rejected">建议落选</option>
+            <option value="draft">已暂存</option>
+            <option value="submitted">已提交</option>
+            <option value="unreviewed">未处理</option>
+          </select>
+        </label>
+        <button class="secondary-button" type="button" id="openStatsButton">后台统计</button>
+      </section>
+
+      <section class="awards-workbench">
+        <aside class="folder-panel" aria-label="后台文件夹">
+          <div class="panel-title">
+            <span>后台文件夹</span>
+            <strong id="activeFolderLabel">全部稿件</strong>
+          </div>
+          <div id="folderTree" class="folder-tree"></div>
+        </aside>
+
+        <aside class="submission-queue awards-queue" aria-label="稿件列表">
+          <div class="queue-head">
+            <div>
+              <h2>待处理稿件</h2>
+              <p id="queueScopeText">请先选择文件夹或领取任务。</p>
+            </div>
+          </div>
+          <div class="identity-toggle">
+            <label>
+              <input id="anonymousToggle" type="checkbox" checked>
+              <span>匿名评审</span>
+            </label>
+          </div>
+          <div id="submissionList" class="submission-list"></div>
+        </aside>
+
+        <article class="reading-panel awards-reading" aria-label="作品阅读">
+          <div class="reading-head">
+            <div>
+              <span class="section-kicker" id="submissionCode">IPB-000</span>
+              <h2 id="readingTitle">-</h2>
+            </div>
+            <span class="status-pill" id="readingStatus">未处理</span>
+          </div>
+          <div class="poem-meta" id="poemMeta"></div>
+          <div class="author-detail-grid" id="authorDetails"></div>
+          <div class="poem-reader">
+            <section>
+              <h3>诗歌原文</h3>
+              <pre id="poemOriginal"></pre>
+            </section>
+            <section>
+              <h3>中文译稿</h3>
+              <pre id="poemTranslation"></pre>
+            </section>
+          </div>
+          <div class="attachment-row" aria-label="附件预览">
+            <figure>
+              <img id="manuscriptPreview" src="./assets/children-poetry/poem-rock-sea.jpg" alt="">
+              <figcaption>手稿图片</figcaption>
+            </figure>
+            <figure>
+              <img id="portraitPreview" src="./assets/children-poetry/child-rock-poem.jpg" alt="">
+              <figcaption>作者照片 / 生活照片</figcaption>
+            </figure>
+          </div>
+          <section class="context-notes">
+            <h3>创作谈与经历</h3>
+            <p id="contextNotes"></p>
+          </section>
+        </article>
+
+        <aside class="score-panel awards-score" aria-label="评分表">
+          <form id="scoreForm">
+            <div class="score-head">
+              <div>
+                <span class="section-kicker" id="stageLabel">初审评分</span>
+                <h2>评审意见</h2>
+              </div>
+              <div class="score-total">
+                <span>总分</span>
+                <strong id="scoreTotal">0</strong>
+              </div>
+            </div>
+
+            <div class="rubric-list compact-rubric">
+              <label class="rubric-item">
+                <span>原创与童真</span>
+                <input name="originality" type="range" min="0" max="10" value="7">
+                <output>7</output>
+              </label>
+              <label class="rubric-item">
+                <span>意象与感受</span>
+                <input name="image" type="range" min="0" max="10" value="7">
+                <output>7</output>
+              </label>
+              <label class="rubric-item">
+                <span>语言活力</span>
+                <input name="language" type="range" min="0" max="10" value="7">
+                <output>7</output>
+              </label>
+              <label class="rubric-item">
+                <span>适合石刻</span>
+                <input name="beach" type="range" min="0" max="10" value="7">
+                <output>7</output>
+              </label>
+            </div>
+
+            <label class="field">
+              <span id="recommendationLabel">初审建议</span>
+              <select name="recommendation" id="recommendationSelect"></select>
+            </label>
+
+            <div class="ai-check-panel">
+              <button class="secondary-button" type="button" id="aiCheckButton">AI 查重 / 查抄袭</button>
+              <div id="aiCheckResult" class="ai-check-result">尚未检查。</div>
+            </div>
+
+            <label class="field">
+              <span id="reasonLabel">推荐理由 / 淘汰理由</span>
+              <textarea name="juryComment" rows="5" placeholder="请写明推荐入围、建议落选或奖项推荐的主要理由。"></textarea>
+            </label>
+
+            <label class="field final-only">
+              <span>补投稿与讨论记录</span>
+              <textarea name="discussionNotes" rows="4" placeholder="终审评委可记录需补充材料、争议点、复议意见；此处不作为最终决定。"></textarea>
+            </label>
+
+            <div class="submit-actions">
+              <button class="secondary-button" type="button" id="saveDraftScoreButton">暂存</button>
+              <button class="secondary-button" type="button" id="exportScoresButton">导出 JSON</button>
+              <button class="primary-button" type="submit">终极提交</button>
+            </div>
+            <p class="form-note">当前为前端原型：身份入口、密码、查重和后台统计均为演示流程；正式上线时应接入服务器权限、文件存储和日志审计。</p>
+          </form>
+        </aside>
+      </section>
+    </main>
+
+    <section id="statsOverlay" class="stats-overlay" aria-hidden="true">
+      <div class="stats-dialog" role="dialog" aria-modal="true" aria-label="后台统计">
+        <div class="stats-head">
+          <div>
+            <span class="section-kicker">Statistics</span>
+            <h2>后台统计</h2>
+          </div>
+          <button type="button" id="closeStatsButton" aria-label="关闭统计">×</button>
+        </div>
+        <div id="statsContent" class="stats-content"></div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./children-poetry.js?v=20260614-pebble-upload-i18n"></script>
+  </body>
+</html>
